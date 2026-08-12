@@ -36,22 +36,18 @@ import {
   Add as AddIcon,
 } from "@mui/icons-material";
 import axios from "axios";
-
 const EmployeeList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchText, setSearchText] = useState("");
-
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-
   const [showModal, setShowModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
-
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -59,23 +55,18 @@ const EmployeeList = () => {
     user_type: "employee",
     password: "",
   });
-
   const [notification, setNotification] = useState({
     open: false,
     message: "",
     severity: "info",
   });
-
   const token = localStorage.getItem("accessToken");
-
   const showNotify = (message, severity = "success") => {
     setNotification({ open: true, message, severity });
   };
-
   const handleCloseNotify = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
-
   const getUserList = useCallback(
     async (page = 1, limit = 10, search = "") => {
       setLoading(true);
@@ -90,7 +81,6 @@ const EmployeeList = () => {
             },
           }
         );
-
         if (res.data.success) {
           setUsers(res.data.data.users || []);
           setPagination({
@@ -107,29 +97,24 @@ const EmployeeList = () => {
     },
     [token]
   );
-
   useEffect(() => {
     getUserList();
   }, [getUserList]);
-
   const handleChangePage = (event, newPage) => {
     const page = newPage + 1;
     setPagination((prev) => ({ ...prev, current: page }));
     getUserList(page, pagination.pageSize, searchText);
   };
-
   const handleChangeRowsPerPage = (event) => {
     const newSize = parseInt(event.target.value, 10);
     setPagination((prev) => ({ ...prev, pageSize: newSize, current: 1 }));
     getUserList(1, newSize, searchText);
   };
-
   const onSearchChange = (e) => {
     const val = e.target.value;
     setSearchText(val);
     getUserList(1, pagination.pageSize, val);
   };
-
   const handleOpenModal = (employee = null) => {
     if (employee) {
       setEditingEmployee(employee);
@@ -152,12 +137,10 @@ const EmployeeList = () => {
     }
     setShowModal(true);
   };
-
   const handleCloseModal = () => {
     if (isSubmitting) return;
     setShowModal(false);
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -165,7 +148,6 @@ const EmployeeList = () => {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (
@@ -176,12 +158,10 @@ const EmployeeList = () => {
       showNotify("Please fill in all required fields (Full name, email, and password)", "error");
       return;
     }
-
     setIsSubmitting(true);
     try {
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const payload = { ...formData };
-
       if (editingEmployee) {
         await axios.put(
           `${import.meta.env.VITE_APP_BACKEND_URL}/user/edit/${editingEmployee._id}`,
@@ -206,7 +186,6 @@ const EmployeeList = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleStatusChange = async (checked, record) => {
     try {
       let res = await axios.patch(
@@ -223,7 +202,6 @@ const EmployeeList = () => {
       showNotify("Failed to update status", "error");
     }
   };
-
   const renderRoleChip = (role) => {
     if (role === "super_admin") {
       return <Chip label="Super Admin" color="secondary" size="small" sx={{ fontWeight: 600 }} />;
@@ -233,10 +211,8 @@ const EmployeeList = () => {
     }
     return <Chip label="Employee" color="info" size="small" sx={{ fontWeight: 600 }} />;
   };
-
   return (
     <Container maxWidth="lg" sx={{ py: 2 }}>
-      {/* Header Section */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
         <Typography variant="h5" fontWeight={700} sx={{ color: "#0f172a" }}>
           User & Employee Management
@@ -251,10 +227,7 @@ const EmployeeList = () => {
           Add User
         </Button>
       </Box>
-
-      {/* Main Table Card */}
-      <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
-        {/* Search Bar */}
+      <Paper elevation={3} sx={{ borderRadius: 0, p: 2 }}>
         <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-start" }}>
           <TextField
             placeholder="Search by name or email..."
@@ -271,9 +244,7 @@ const EmployeeList = () => {
             }}
           />
         </Box>
-
-        {/* User Data Table */}
-        <TableContainer sx={{ borderRadius: 2 }}>
+        <TableContainer sx={{ borderRadius: 0 }}>
           <Table sx={{ minWidth: 650 }}>
             <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
               <TableRow>
@@ -329,8 +300,6 @@ const EmployeeList = () => {
             </TableBody>
           </Table>
         </TableContainer>
-
-        {/* Table Pagination */}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
@@ -341,8 +310,6 @@ const EmployeeList = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-
-      {/* Add / Edit User Dialog Modal */}
       <Dialog open={showModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 700, bgcolor: "#0f172a", color: "#ffffff" }}>
           {editingEmployee ? "Edit User" : "Add New User"}
@@ -361,7 +328,6 @@ const EmployeeList = () => {
                   required
                 />
               </Grid>
-
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -374,7 +340,6 @@ const EmployeeList = () => {
                   required
                 />
               </Grid>
-
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -385,7 +350,6 @@ const EmployeeList = () => {
                   disabled={isSubmitting}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel id="role-select-label">User Role *</InputLabel>
@@ -402,7 +366,6 @@ const EmployeeList = () => {
                   </Select>
                 </FormControl>
               </Grid>
-
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -440,7 +403,6 @@ const EmployeeList = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       <Snackbar
         open={notification.open}
         autoHideDuration={3000}
@@ -454,5 +416,4 @@ const EmployeeList = () => {
     </Container>
   );
 };
-
 export default EmployeeList;

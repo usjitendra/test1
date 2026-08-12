@@ -15,7 +15,6 @@ import {
 import { Edit as EditIcon, Save as SaveIcon, Lock as LockIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 const ProfilePage = () => {
   const [user, setUser] = useState({});
   const [editing, setEditing] = useState(false);
@@ -28,10 +27,8 @@ const ProfilePage = () => {
   });
   const [notification, setNotification] = useState({ open: false, message: "", severity: "info" });
   const [loading, setLoading] = useState(false);
-
   const token = localStorage.getItem("accessToken") || "";
   const navigate = useNavigate();
-
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("user") || "{}");
     setUser(stored);
@@ -43,16 +40,13 @@ const ProfilePage = () => {
       phone: stored.phone || "",
     });
   }, []);
-
   const handleInputChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
   const handleCloseNotify = () => setNotification((prev) => ({ ...prev, open: false }));
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -63,7 +57,6 @@ const ProfilePage = () => {
         phone: formData.phone,
         department: formData.department,
       };
-
       const res = await axios.put(
         `${import.meta.env.VITE_APP_BACKEND_URL}/user/update`,
         updatedPayload,
@@ -74,7 +67,6 @@ const ProfilePage = () => {
           },
         }
       );
-
       if (res.data.success) {
         const newUserObj = { ...user, ...res.data.data };
         setUser(newUserObj);
@@ -95,7 +87,6 @@ const ProfilePage = () => {
       setLoading(false);
     }
   };
-
   const getInitials = (name) => {
     if (!name) return "U";
     return name
@@ -105,11 +96,9 @@ const ProfilePage = () => {
       .slice(0, 2)
       .toUpperCase();
   };
-
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-        {/* Header Profile Section */}
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 0 }}>
         <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 3, mb: 3 }}>
           <Avatar
             sx={{
@@ -123,7 +112,6 @@ const ProfilePage = () => {
           >
             {getInitials(user.full_name || user.username)}
           </Avatar>
-
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h5" fontWeight={700} sx={{ color: "#0f172a" }}>
               {user.full_name || user.username || "User"}
@@ -132,7 +120,6 @@ const ProfilePage = () => {
               {user.email}
             </Typography>
           </Box>
-
           <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
             <Button
               variant={editing ? "outlined" : "contained"}
@@ -158,10 +145,7 @@ const ProfilePage = () => {
             </Button>
           </Box>
         </Box>
-
         <Divider sx={{ my: 3 }} />
-
-        {/* Profile Form */}
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -175,7 +159,6 @@ const ProfilePage = () => {
                 required
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -185,7 +168,6 @@ const ProfilePage = () => {
                 disabled
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -195,7 +177,6 @@ const ProfilePage = () => {
                 disabled
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -206,7 +187,6 @@ const ProfilePage = () => {
                 disabled={!editing || loading}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -218,7 +198,6 @@ const ProfilePage = () => {
               />
             </Grid>
           </Grid>
-
           {editing && (
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
               <Button
@@ -235,7 +214,6 @@ const ProfilePage = () => {
           )}
         </Box>
       </Paper>
-
       <Snackbar open={notification.open} autoHideDuration={3000} onClose={handleCloseNotify} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: "100%" }}>
           {notification.message}
@@ -244,5 +222,4 @@ const ProfilePage = () => {
     </Container>
   );
 };
-
 export default ProfilePage;

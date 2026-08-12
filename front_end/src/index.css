@@ -17,3 +17,16 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.MuiPaper-root,
+.MuiCard-root,
+.MuiButton-root,
+.MuiChip-root,
+.MuiDialog-paper,
+.MuiTableContainer-root,
+.MuiOutlinedInput-root,
+.MuiInputBase-root,
+.MuiPopover-paper,
+.MuiDrawer-paper {
+  border-radius: 0px !important;
+}

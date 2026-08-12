@@ -15,20 +15,16 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-
 const ChangePassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: "", severity: "info" });
-
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const token = localStorage.getItem("accessToken");
-
   const handleCloseNotify = () => setNotification((prev) => ({ ...prev, open: false }));
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -39,7 +35,6 @@ const ChangePassword = () => {
       setNotification({ open: true, message: "Password must be at least 6 characters!", severity: "error" });
       return;
     }
-
     setLoading(true);
     try {
       const response = await axios.post(
@@ -52,7 +47,6 @@ const ChangePassword = () => {
           },
         }
       );
-
       if (response.data.success) {
         setNotification({ open: true, message: "Password changed successfully!", severity: "success" });
         setTimeout(() => {
@@ -80,7 +74,6 @@ const ChangePassword = () => {
       setLoading(false);
     }
   };
-
   return (
     <Box
       sx={{
@@ -91,14 +84,13 @@ const ChangePassword = () => {
       }}
     >
       <Container maxWidth="xs">
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3, textAlign: "center" }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 0, textAlign: "center" }}>
           <Typography variant="h5" component="h2" fontWeight={700} gutterBottom sx={{ color: "#0f172a" }}>
             Change Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Enter your new password below
           </Typography>
-
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               fullWidth
@@ -119,7 +111,6 @@ const ChangePassword = () => {
                 ),
               }}
             />
-
             <TextField
               fullWidth
               label="Confirm Password"
@@ -130,7 +121,6 @@ const ChangePassword = () => {
               required
               disabled={loading}
             />
-
             <Button
               type="submit"
               fullWidth
@@ -144,7 +134,6 @@ const ChangePassword = () => {
           </Box>
         </Paper>
       </Container>
-
       <Snackbar open={notification.open} autoHideDuration={3000} onClose={handleCloseNotify} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: "100%" }}>
           {notification.message}
@@ -153,5 +142,4 @@ const ChangePassword = () => {
     </Box>
   );
 };
-
 export default ChangePassword;

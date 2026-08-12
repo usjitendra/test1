@@ -17,13 +17,15 @@
     "antd": "^6.1.4",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
+    "emoji-picker-react": "^4.19.1",
     "react": "^19.2.0",
     "react-apexcharts": "^1.9.0",
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-sweetalert": "^5.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0",
-    "recharts": "^3.6.0"
+    "recharts": "^3.6.0",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

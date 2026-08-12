@@ -26,27 +26,22 @@ import {
   VpnKey as KeyIcon,
   Logout as LogoutIcon,
   Menu as MenuIcon,
+  ChatBubble as ChatIcon,
 } from '@mui/icons-material';
-
 const drawerWidth = 240;
-
 const MainLayout = ({ userRole, children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutSnackbar, setLogoutSnackbar] = useState(false);
-
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
   const handleLogout = () => {
     handleMenuClose();
     localStorage.clear();
@@ -55,38 +50,39 @@ const MainLayout = ({ userRole, children }) => {
       navigate('/');
     }, 500);
   };
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
   const isActive = (path) => location.pathname === path;
-
   const dashboardPath =
     userRole === 'super_admin'
       ? '/super-admin'
       : userRole === 'admin'
       ? '/admin'
       : '/employee';
-
   const profilePath =
     userRole === 'super_admin' || userRole === 'admin'
       ? '/admin/profile'
       : '/employee/profile';
-
   const changePasswordPath =
     userRole === 'super_admin' || userRole === 'admin'
       ? '/admin/change-password'
       : '/employee/change-password';
-
+  const chatPath =
+    userRole === 'super_admin' || userRole === 'admin'
+      ? '/admin/chat'
+      : '/employee/chat';
   const navItems =
     userRole === 'super_admin' || userRole === 'admin'
       ? [
           { text: 'Dashboard', icon: <DashboardIcon />, path: dashboardPath },
           { text: 'Users List', icon: <PeopleIcon />, path: '/admin/users' },
+          { text: 'Chat', icon: <ChatIcon />, path: chatPath },
         ]
-      : [{ text: 'Dashboard', icon: <DashboardIcon />, path: dashboardPath }];
-
+      : [
+          { text: 'Dashboard', icon: <DashboardIcon />, path: dashboardPath },
+          { text: 'Chat', icon: <ChatIcon />, path: chatPath },
+        ];
   const drawerContent = (
     <Box sx={{ overflow: 'auto', mt: { xs: 2, sm: 0 } }}>
       <Toolbar sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'center', py: 1 }}>
@@ -111,7 +107,7 @@ const MainLayout = ({ userRole, children }) => {
               }}
               selected={active}
               sx={{
-                borderRadius: 2,
+                borderRadius: 0,
                 mb: 1,
                 '&.Mui-selected': {
                   backgroundColor: 'primary.main',
@@ -138,10 +134,8 @@ const MainLayout = ({ userRole, children }) => {
       </List>
     </Box>
   );
-
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      {/* Top AppBar */}
       <AppBar
         position="fixed"
         elevation={1}
@@ -163,11 +157,9 @@ const MainLayout = ({ userRole, children }) => {
           >
             <MenuIcon />
           </IconButton>
-
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, color: '#0f172a' }}>
-            Leave Management System
+            Jamtech Technologies
           </Typography>
-
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Tooltip title="Account Settings">
               <IconButton onClick={handleMenuOpen} size="small" sx={{ ml: 2 }}>
@@ -184,8 +176,6 @@ const MainLayout = ({ userRole, children }) => {
               {user.full_name || 'User'}
             </Typography>
           </Box>
-
-          {/* Account Dropdown Menu */}
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
@@ -231,14 +221,11 @@ const MainLayout = ({ userRole, children }) => {
           </Menu>
         </Toolbar>
       </AppBar>
-
-      {/* Navigation Drawer */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="navigation items"
       >
-        {/* Mobile Temporary Drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -251,7 +238,6 @@ const MainLayout = ({ userRole, children }) => {
         >
           {drawerContent}
         </Drawer>
-        {/* Desktop Permanent Drawer */}
         <Drawer
           variant="permanent"
           sx={{
@@ -263,8 +249,6 @@ const MainLayout = ({ userRole, children }) => {
           {drawerContent}
         </Drawer>
       </Box>
-
-      {/* Main Content Area */}
       <Box
         component="main"
         sx={{
@@ -278,7 +262,6 @@ const MainLayout = ({ userRole, children }) => {
       >
         {children}
       </Box>
-
       <Snackbar
         open={logoutSnackbar}
         autoHideDuration={2000}
@@ -291,5 +274,4 @@ const MainLayout = ({ userRole, children }) => {
     </Box>
   );
 };
-
 export default MainLayout;

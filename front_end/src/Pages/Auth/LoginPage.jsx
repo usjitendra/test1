@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
-
 const LoginPage = () => {
   const [isReset, setIsReset] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,38 +26,31 @@ const LoginPage = () => {
     newPassword: '',
     confirmPassword: '',
   });
-
   const [notification, setNotification] = useState({
     open: false,
     message: '',
     severity: 'info',
   });
-
   const navigate = useNavigate();
   const loginTime = Date.now();
-
   const handleInputChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
   const showNotify = (message, severity = 'success') => {
     setNotification({ open: true, message, severity });
   };
-
   const handleCloseNotify = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
       showNotify('Please enter Email and Password', 'error');
       return;
     }
-
     setLoading(true);
     try {
       const loginRes = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/user/login`, {
@@ -66,14 +58,12 @@ const LoginPage = () => {
         password: formData.password,
       });
       const resData = loginRes?.data;
-
       if (resData?.success && resData?.data) {
         const { user, accessToken } = resData.data;
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('loginTime', loginTime.toString());
         showNotify(resData.message || 'Login successful');
-        
         setTimeout(() => {
           if (user?.user_type === 'super_admin') {
             navigate('/super-admin');
@@ -94,7 +84,6 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
-
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     if (!formData.email) {
@@ -109,7 +98,6 @@ const LoginPage = () => {
       setLoading(false);
     }, 1200);
   };
-
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
@@ -124,7 +112,6 @@ const LoginPage = () => {
       setLoading(false);
     }, 1200);
   };
-
   return (
     <Box
       sx={{
@@ -144,7 +131,7 @@ const LoginPage = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            borderRadius: 3,
+            borderRadius: 0,
             backgroundColor: '#ffffff',
           }}
         >
@@ -154,7 +141,6 @@ const LoginPage = () => {
             alt="Jamtech Technologies"
             sx={{ width: 220, mb: 3, objectFit: 'contain' }}
           />
-
           {isReset === 'forgot' ? (
             <Box component="form" onSubmit={handleForgotPassword} sx={{ width: '100%' }}>
               <Typography variant="h6" align="center" gutterBottom sx={{ fontWeight: 600 }}>
@@ -301,7 +287,6 @@ const LoginPage = () => {
           )}
         </Paper>
       </Container>
-
       <Snackbar
         open={notification.open}
         autoHideDuration={4000}
@@ -315,5 +300,4 @@ const LoginPage = () => {
     </Box>
   );
 };
-
 export default LoginPage;

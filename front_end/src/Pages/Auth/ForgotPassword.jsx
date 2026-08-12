@@ -12,19 +12,15 @@ import {
   Alert,
   Link,
 } from '@mui/material';
-
 const ForgotPassword = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
   const navigate = useNavigate();
-
   const handleCloseNotify = () => setNotification((prev) => ({ ...prev, open: false }));
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!username) return;
-
     setLoading(true);
     setTimeout(() => {
       localStorage.setItem('resetEmail', username);
@@ -35,7 +31,6 @@ const ForgotPassword = () => {
       setLoading(false);
     }, 500);
   };
-
   return (
     <Box
       sx={{
@@ -48,14 +43,13 @@ const ForgotPassword = () => {
       }}
     >
       <Container maxWidth="xs">
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3, textAlign: 'center' }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 0, textAlign: 'center' }}>
           <Typography variant="h5" component="h2" fontWeight={700} gutterBottom sx={{ color: '#0f172a' }}>
             Forgot Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Enter your username to reset password
           </Typography>
-
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               fullWidth
@@ -68,7 +62,6 @@ const ForgotPassword = () => {
               disabled={loading}
               autoFocus
             />
-
             <Button
               type="submit"
               fullWidth
@@ -79,7 +72,6 @@ const ForgotPassword = () => {
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Send Reset Link'}
             </Button>
-
             <Box sx={{ mt: 2 }}>
               <Link component={RouterLink} to="/" variant="body2" underline="hover" color="primary">
                 Back to Login
@@ -88,7 +80,6 @@ const ForgotPassword = () => {
           </Box>
         </Paper>
       </Container>
-
       <Snackbar open={notification.open} autoHideDuration={3000} onClose={handleCloseNotify} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: '100%' }}>
           {notification.message}
@@ -97,5 +88,4 @@ const ForgotPassword = () => {
     </Box>
   );
 };
-
 export default ForgotPassword;

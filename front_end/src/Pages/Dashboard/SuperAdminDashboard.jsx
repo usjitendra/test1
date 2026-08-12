@@ -16,12 +16,10 @@ import {
   CheckCircle as ActiveIcon,
 } from "@mui/icons-material";
 import axios from "axios";
-
 const SuperAdminDashboard = () => {
   const [stats, setStats] = useState({ total_employees: 0, total_admins: 0, active_users: 0 });
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("accessToken");
-
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -43,7 +41,6 @@ const SuperAdminDashboard = () => {
     };
     fetchStats();
   }, [token]);
-
   return (
     <Container maxWidth="lg" sx={{ py: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 1 }}>
@@ -53,17 +50,15 @@ const SuperAdminDashboard = () => {
         <Chip
           label="Super Admin Control Center"
           color="secondary"
-          sx={{ fontWeight: 600, px: 1, py: 2, borderRadius: "20px" }}
+          sx={{ fontWeight: 600, px: 1, py: 2, borderRadius: 0 }}
         />
       </Box>
-
       <Grid container spacing={3}>
-        {/* Total Admins */}
         <Grid item xs={12} md={4}>
-          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+          <Card elevation={2} sx={{ borderRadius: 0, backgroundColor: "#ffffff" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Avatar sx={{ bgcolor: "#f3e8ff", color: "#8b5cf6", width: 56, height: 56, borderRadius: 3 }}>
+                <Avatar sx={{ bgcolor: "#f3e8ff", color: "#8b5cf6", width: 56, height: 56, borderRadius: 0 }}>
                   <AdminIcon fontSize="large" />
                 </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
@@ -82,13 +77,11 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Total Employees */}
         <Grid item xs={12} md={4}>
-          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+          <Card elevation={2} sx={{ borderRadius: 0, backgroundColor: "#ffffff" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Avatar sx={{ bgcolor: "#e0f2fe", color: "#00AEEF", width: 56, height: 56, borderRadius: 3 }}>
+                <Avatar sx={{ bgcolor: "#e0f2fe", color: "#00AEEF", width: 56, height: 56, borderRadius: 0 }}>
                   <PeopleIcon fontSize="large" />
                 </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
@@ -107,13 +100,11 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Active Users */}
         <Grid item xs={12} md={4}>
-          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+          <Card elevation={2} sx={{ borderRadius: 0, backgroundColor: "#ffffff" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Avatar sx={{ bgcolor: "#dcfce7", color: "#16a34a", width: 56, height: 56, borderRadius: 3 }}>
+                <Avatar sx={{ bgcolor: "#dcfce7", color: "#16a34a", width: 56, height: 56, borderRadius: 0 }}>
                   <ActiveIcon fontSize="large" />
                 </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
@@ -136,5 +127,4 @@ const SuperAdminDashboard = () => {
     </Container>
   );
 };
-
 export default SuperAdminDashboard;

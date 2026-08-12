@@ -16,45 +16,34 @@ import ResetPassword from "./Pages/Auth/ResetPassword";
 import ProfilePage from "./Pages/ProfilePage";
 import UserList from "./Pages/Admin/EmployeeList";
 import ChangePassword from "./Pages/Auth/ChangePassword";
-
+import ChatPage from "./Pages/Chat/ChatPage";
 const SESSION_DURATION = 199 * 60 * 60 * 1000;
-
 const App = () => {
   const navigate = useNavigate();
-
   const handleLogout = () => {
     localStorage.clear();
     navigate("/", { replace: true });
   };
-
   useEffect(() => {
     const interval = setInterval(
       () => {
         const loginTime = localStorage.getItem("loginTime");
-
         if (!loginTime) return;
-
         const now = Date.now();
         const diff = now - Number(loginTime);
-
         if (diff >= SESSION_DURATION) {
           handleLogout();
         }
       },
       1 * 60 * 1000
     );
-
     return () => clearInterval(interval);
   }, []);
-
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-
-      {/* Super Admin Routes */}
       <Route
         path="/super-admin"
         element={
@@ -65,8 +54,16 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Admin Routes */}
+      <Route
+        path="/super-admin/chat"
+        element={
+          <ProtectedRoute allowedRole="super_admin">
+            <MainLayout userRole="super_admin">
+              <ChatPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin"
         element={
@@ -107,8 +104,16 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Employee Routes */}
+      <Route
+        path="/admin/chat"
+        element={
+          <ProtectedRoute allowedRole="admin">
+            <MainLayout userRole="admin">
+              <ChatPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/employee"
         element={
@@ -139,11 +144,18 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Catch all - redirect to login */}
+      <Route
+        path="/employee/chat"
+        element={
+          <ProtectedRoute allowedRole="employee">
+            <MainLayout userRole="employee">
+              <ChatPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
-
 export default App;

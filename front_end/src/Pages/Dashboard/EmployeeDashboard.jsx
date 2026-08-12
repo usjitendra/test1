@@ -13,19 +13,16 @@ import {
 } from "@mui/material";
 import { Person as PersonIcon, VpnKey as KeyIcon, CheckCircle as CheckCircleIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-
   return (
     <Container maxWidth="lg" sx={{ py: 2 }}>
-      {/* Banner / Welcome Header */}
       <Paper
         elevation={4}
         sx={{
           p: 3.5,
-          borderRadius: 3,
+          borderRadius: 0,
           background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
           color: "#ffffff",
           mb: 4,
@@ -45,20 +42,17 @@ const EmployeeDashboard = () => {
               </Typography>
             </Box>
           </Box>
-
           <Chip
             icon={<CheckCircleIcon sx={{ color: "#ffffff !important" }} />}
             label="Active Session"
             color="success"
-            sx={{ px: 1, py: 2, fontWeight: 600, borderRadius: "20px" }}
+            sx={{ px: 1, py: 2, fontWeight: 600, borderRadius: 0 }}
           />
         </Box>
       </Paper>
-
-      {/* Grid of Options */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ borderRadius: 3, height: "100%" }}>
+          <Card elevation={2} sx={{ borderRadius: 0, height: "100%" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: "#0f172a" }}>
                 Account Details
@@ -85,9 +79,8 @@ const EmployeeDashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-
         <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ borderRadius: 3, height: "100%" }}>
+          <Card elevation={2} sx={{ borderRadius: 0, height: "100%" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: "#0f172a" }}>
                 Quick Security Settings
@@ -111,5 +104,4 @@ const EmployeeDashboard = () => {
     </Container>
   );
 };
-
 export default EmployeeDashboard;

@@ -15,7 +15,6 @@ import {
   InputAdornment,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,9 +22,7 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
   const navigate = useNavigate();
-
   const handleCloseNotify = () => setNotification((prev) => ({ ...prev, open: false }));
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -36,7 +33,6 @@ const ResetPassword = () => {
       setNotification({ open: true, message: 'Password must be at least 6 characters!', severity: 'error' });
       return;
     }
-
     setLoading(true);
     setTimeout(() => {
       localStorage.removeItem('resetEmail');
@@ -51,7 +47,6 @@ const ResetPassword = () => {
       setLoading(false);
     }, 500);
   };
-
   return (
     <Box
       sx={{
@@ -64,14 +59,13 @@ const ResetPassword = () => {
       }}
     >
       <Container maxWidth="xs">
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3, textAlign: 'center' }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 0, textAlign: 'center' }}>
           <Typography variant="h5" component="h2" fontWeight={700} gutterBottom sx={{ color: '#0f172a' }}>
             Reset Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Enter your new password
           </Typography>
-
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               fullWidth
@@ -92,7 +86,6 @@ const ResetPassword = () => {
                 ),
               }}
             />
-
             <TextField
               fullWidth
               label="Confirm Password"
@@ -103,7 +96,6 @@ const ResetPassword = () => {
               required
               disabled={loading}
             />
-
             <Button
               type="submit"
               fullWidth
@@ -114,7 +106,6 @@ const ResetPassword = () => {
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Reset Password'}
             </Button>
-
             <Box sx={{ mt: 2 }}>
               <Link component={RouterLink} to="/" variant="body2" underline="hover" color="primary">
                 Back to Login
@@ -123,7 +114,6 @@ const ResetPassword = () => {
           </Box>
         </Paper>
       </Container>
-
       <Snackbar open={notification.open} autoHideDuration={3000} onClose={handleCloseNotify} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: '100%' }}>
           {notification.message}
@@ -132,5 +122,4 @@ const ResetPassword = () => {
     </Box>
   );
 };
-
 export default ResetPassword;
