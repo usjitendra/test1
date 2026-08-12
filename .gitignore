@@ -1,0 +1,79 @@
+# =========================
+# Node Modules
+# =========================
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# =========================
+# Build Outputs
+# =========================
+dist/
+build/
+*/dist/
+*/build/
+
+# =========================
+# Environment Variables (SECRET - NEVER PUSH!)
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+*/.env
+*/.env.local
+*/.env.development
+*/.env.production
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log.*
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Editor & IDE Config
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+
+# =========================
+# Package Manager Lock Files (optional - comment out if you want to keep)
+# =========================
+# package-lock.json
+# yarn.lock
+
+# =========================
+# Vite / React Build Cache
+# =========================
+.vite/
+*.local
+
+# =========================
+# Coverage Reports
+# =========================
+coverage/
+*.lcov
+.nyc_output/
+
+# =========================
+# Uploads / Temp Files
+# =========================
+uploads/
+temp/
+tmp/
