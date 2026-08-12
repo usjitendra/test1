@@ -1,22 +1,50 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Input, Button, message } from 'antd';
-import { Container, Row, Col } from 'react-bootstrap';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Link,
+  IconButton,
+  InputAdornment,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const ResetPassword = () => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
-    if (values.password !== values.confirmPassword) {
-      message.error('Passwords do not match!');
+  const handleCloseNotify = () => setNotification((prev) => ({ ...prev, open: false }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setNotification({ open: true, message: 'Passwords do not match!', severity: 'error' });
+      return;
+    }
+    if (password.length < 6) {
+      setNotification({ open: true, message: 'Password must be at least 6 characters!', severity: 'error' });
       return;
     }
 
     setLoading(true);
     setTimeout(() => {
       localStorage.removeItem('resetEmail');
-      message.success('Password reset successful! Please login with your new password.');
+      setNotification({
+        open: true,
+        message: 'Password reset successful! Redirecting to login...',
+        severity: 'success',
+      });
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -25,66 +53,83 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="auth-container">
-      <Container>
-        <Row className="justify-content-center align-items-center min-vh-100">
-          <Col xs={12} sm={10} md={8} lg={5}>
-            <div className="auth-card">
-              <div className="auth-header">
-                <h2>Reset Password</h2>
-                <p>Enter your new password</p>
-              </div>
-              <Form
-                name="reset-password"
-                onFinish={onFinish}
-                layout="vertical"
-                className="auth-form"
-              >
-                <Form.Item
-                  label="New Password"
-                  name="password"
-                  rules={[
-                    { required: true, message: 'Please enter your new password!' },
-                    { min: 6, message: 'Password must be at least 6 characters!' }
-                  ]}
-                >
-                  <Input.Password size="large" placeholder="Enter new password" />
-                </Form.Item>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc',
+        py: 4,
+      }}
+    >
+      <Container maxWidth="xs">
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 3, textAlign: 'center' }}>
+          <Typography variant="h5" component="h2" fontWeight={700} gutterBottom sx={{ color: '#0f172a' }}>
+            Reset Password
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Enter your new password
+          </Typography>
 
-                <Form.Item
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  rules={[
-                    { required: true, message: 'Please confirm your password!' },
-                  ]}
-                >
-                  <Input.Password size="large" placeholder="Confirm new password" />
-                </Form.Item>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <TextField
+              fullWidth
+              label="New Password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+              required
+              disabled={loading}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    size="large"
-                    loading={loading}
-                    className="auth-button"
-                    block
-                  >
-                    Reset Password
-                  </Button>
-                </Form.Item>
+            <TextField
+              fullWidth
+              label="Confirm Password"
+              type={showPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              margin="normal"
+              required
+              disabled={loading}
+            />
 
-                <Form.Item>
-                  <Link to="/" className="back-link">
-                    Back to Login
-                  </Link>
-                </Form.Item>
-              </Form>
-            </div>
-          </Col>
-        </Row>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={loading}
+              sx={{ mt: 3, mb: 2, py: 1.2, fontWeight: 600 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Reset Password'}
+            </Button>
+
+            <Box sx={{ mt: 2 }}>
+              <Link component={RouterLink} to="/" variant="body2" underline="hover" color="primary">
+                Back to Login
+              </Link>
+            </Box>
+          </Box>
+        </Paper>
       </Container>
-    </div>
+
+      <Snackbar open={notification.open} autoHideDuration={3000} onClose={handleCloseNotify} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: '100%' }}>
+          {notification.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

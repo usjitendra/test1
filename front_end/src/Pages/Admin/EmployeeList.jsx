@@ -1,9 +1,40 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Input, Button, Tag, Space, Switch } from "antd";
-import { SearchOutlined, EditOutlined } from "@ant-design/icons";
-import { Modal, Form, Button as Btn, Spinner, Row, Col } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import SweetAlert from "react-bootstrap-sweetalert";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Button,
+  TextField,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TablePagination,
+  Switch,
+  Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  InputAdornment,
+  Grid,
+} from "@mui/material";
+import {
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Add as AddIcon,
+} from "@mui/icons-material";
 import axios from "axios";
 
 const EmployeeList = () => {
@@ -29,8 +60,21 @@ const EmployeeList = () => {
     password: "",
   });
 
-  const [alert, setAlert] = useState(null);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
   const token = localStorage.getItem("accessToken");
+
+  const showNotify = (message, severity = "success") => {
+    setNotification({ open: true, message, severity });
+  };
+
+  const handleCloseNotify = () => {
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
 
   const getUserList = useCallback(
     async (page = 1, limit = 10, search = "") => {
@@ -48,11 +92,11 @@ const EmployeeList = () => {
         );
 
         if (res.data.success) {
-          setUsers(res.data.data.users);
+          setUsers(res.data.data.users || []);
           setPagination({
-            current: res.data.data.pagination.page,
-            pageSize: res.data.data.pagination.limit,
-            total: res.data.data.total_users,
+            current: res.data.data.pagination?.page || page,
+            pageSize: res.data.data.pagination?.limit || limit,
+            total: res.data.data.total_users || 0,
           });
         }
       } catch (error) {
@@ -68,31 +112,22 @@ const EmployeeList = () => {
     getUserList();
   }, [getUserList]);
 
-  const handleTableChange = (newPagination) => {
-    getUserList(newPagination.current, newPagination.pageSize, searchText);
+  const handleChangePage = (event, newPage) => {
+    const page = newPage + 1;
+    setPagination((prev) => ({ ...prev, current: page }));
+    getUserList(page, pagination.pageSize, searchText);
   };
 
-  const onSearch = (value) => {
-    setSearchText(value);
-    getUserList(1, pagination.pageSize, value);
+  const handleChangeRowsPerPage = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setPagination((prev) => ({ ...prev, pageSize: newSize, current: 1 }));
+    getUserList(1, newSize, searchText);
   };
 
-  const hideAlert = () => setAlert(null);
-
-  const showSuccessAlert = (message) => {
-    setAlert(
-      <SweetAlert
-        success
-        title="Success"
-        onConfirm={() => {
-          hideAlert();
-          getUserList(pagination.current, pagination.pageSize, searchText);
-        }}
-        timeout={2000}
-      >
-        {message}
-      </SweetAlert>
-    );
+  const onSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchText(val);
+    getUserList(1, pagination.pageSize, val);
   };
 
   const handleOpenModal = (employee = null) => {
@@ -133,8 +168,12 @@ const EmployeeList = () => {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    if (!formData.full_name || !formData.email || (!editingEmployee && !formData.password)) {
-      alert("Please fill in all required fields (Full name, email, and password)");
+    if (
+      !formData.full_name ||
+      !formData.email ||
+      (!editingEmployee && !formData.password)
+    ) {
+      showNotify("Please fill in all required fields (Full name, email, and password)", "error");
       return;
     }
 
@@ -149,281 +188,270 @@ const EmployeeList = () => {
           payload,
           config
         );
-        showSuccessAlert("User Updated Successfully!");
+        showNotify("User Updated Successfully!");
       } else {
         await axios.post(
           `${import.meta.env.VITE_APP_BACKEND_URL}/user/add`,
           payload,
           config
         );
-        showSuccessAlert("User Added Successfully!");
+        showNotify("User Added Successfully!");
       }
       setShowModal(false);
+      getUserList(pagination.current, pagination.pageSize, searchText);
     } catch (error) {
       console.error(error);
-      setAlert(
-        <SweetAlert danger title="Error" onConfirm={hideAlert}>
-          {error.response?.data?.message || "Something went wrong!"}
-        </SweetAlert>
-      );
+      showNotify(error.response?.data?.message || "Something went wrong!", "error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleStatusChange = async (checked, record) => {
-    let res = await axios.patch(
-      `${import.meta.env.VITE_APP_BACKEND_URL}/user/toggle-status/${record._id}`,
-      { is_active: checked },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (res.data.success) {
-      showSuccessAlert("Status Updated Successfully");
-      getUserList(pagination.current, pagination.pageSize, searchText);
+    try {
+      let res = await axios.patch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/user/toggle-status/${record._id}`,
+        { is_active: checked },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        showNotify("Status Updated Successfully");
+        getUserList(pagination.current, pagination.pageSize, searchText);
+      }
+    } catch (error) {
+      console.error(error);
+      showNotify("Failed to update status", "error");
     }
   };
 
-  const columns = [
-    {
-      title: "Full Name",
-      dataIndex: "full_name",
-      key: "full_name",
-    },
-    { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Phone", dataIndex: "phone", key: "phone" },
-    {
-      title: "Role",
-      dataIndex: "user_type",
-      key: "user_type",
-      render: (role) =>
-        role === "super_admin" ? (
-          <Tag color="purple">Super Admin</Tag>
-        ) : role === "admin" ? (
-          <Tag color="gold">Admin</Tag>
-        ) : (
-          <Tag color="cyan">Employee</Tag>
-        ),
-    },
-    {
-      title: "Status",
-      key: "is_active",
-      dataIndex: "is_active",
-      render: (isActive, record) => (
-        <Switch
-          checked={isActive}
-          onChange={(checked) => handleStatusChange(checked, record)}
-          loading={loading}
-        />
-      ),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleOpenModal(record)}
-          >
-            Edit
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  const renderRoleChip = (role) => {
+    if (role === "super_admin") {
+      return <Chip label="Super Admin" color="secondary" size="small" sx={{ fontWeight: 600 }} />;
+    }
+    if (role === "admin") {
+      return <Chip label="Admin" color="warning" size="small" sx={{ fontWeight: 600 }} />;
+    }
+    return <Chip label="Employee" color="info" size="small" sx={{ fontWeight: 600 }} />;
+  };
 
   return (
-    <div className="dashboard-container">
-      {alert}
-      <div className="dashboard-content">
-        <div
-          className="dashboard-header-row"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "20px",
-          }}
+    <Container maxWidth="lg" sx={{ py: 2 }}>
+      {/* Header Section */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ color: "#0f172a" }}>
+          User & Employee Management
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => handleOpenModal()}
+          sx={{ fontWeight: 600, py: 1, px: 2.5 }}
         >
-          <h2 className="dashboard-title">User & Employee Management</h2>
-          <Btn
-            style={{
-              color: "black",
-              backgroundColor: "#00AEEF",
-              border: "none",
-            }}
-            onClick={() => handleOpenModal()}
-          >
-            Add User
-          </Btn>
-        </div>
+          Add User
+        </Button>
+      </Box>
 
-        <div className="table-container">
-          <div className="filter-container" style={{ marginBottom: "16px" }}>
-            <Input
-              placeholder="Search by name or email..."
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => onSearch(e.target.value)}
-              className="search-input"
-              style={{ maxWidth: 400 }}
-              allowClear
-            />
-          </div>
-
-          <Table
-            columns={columns}
-            dataSource={users}
-            rowKey="_id"
-            loading={loading}
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} users`,
+      {/* Main Table Card */}
+      <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
+        {/* Search Bar */}
+        <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-start" }}>
+          <TextField
+            placeholder="Search by name or email..."
+            size="small"
+            value={searchText}
+            onChange={onSearchChange}
+            sx={{ width: { xs: "100%", sm: 350 } }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
             }}
-            onChange={handleTableChange}
           />
-        </div>
-      </div>
+        </Box>
 
-      <Modal
-        show={showModal}
-        onHide={handleCloseModal}
-        centered
-        size="lg"
-        backdrop={isSubmitting ? "static" : true}
-      >
-        <Modal.Header
-          closeButton={!isSubmitting}
-          style={{ backgroundColor: "#090909", color: "white" }}
-        >
-          <Modal.Title>
-            {editingEmployee ? "Edit User" : "Add New User"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Row className="mb-3">
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label>
-                    Full Name <span style={{ color: "red" }}>*</span>
-                  </Form.Label>
-                  <Form.Control
-                    disabled={isSubmitting}
-                    name="full_name"
-                    placeholder="Enter full name"
-                    value={formData.full_name}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
+        {/* User Data Table */}
+        <TableContainer sx={{ borderRadius: 2 }}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 700 }}>Full Name</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700 }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <CircularProgress size={32} />
+                  </TableCell>
+                </TableRow>
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 3, color: "text.secondary" }}>
+                    No users found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((row) => (
+                  <TableRow key={row._id} hover>
+                    <TableCell sx={{ fontWeight: 500 }}>{row.full_name || "-"}</TableCell>
+                    <TableCell>{row.email || "-"}</TableCell>
+                    <TableCell>{row.phone || "-"}</TableCell>
+                    <TableCell>{renderRoleChip(row.user_type)}</TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={Boolean(row.is_active)}
+                        onChange={(e) => handleStatusChange(e.target.checked, row)}
+                        color="primary"
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={() => handleOpenModal(row)}
+                        title="Edit User"
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label>
-                    Email <span style={{ color: "red" }}>*</span>
-                  </Form.Label>
-                  <Form.Control
-                    disabled={isSubmitting}
-                    name="email"
-                    type="email"
-                    placeholder="Enter email address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+        {/* Table Pagination */}
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={pagination.total}
+          rowsPerPage={pagination.pageSize}
+          page={pagination.current - 1}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
 
-            <Row className="mb-3">
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label>
-                    Phone Number
-                  </Form.Label>
-                  <Form.Control
-                    disabled={isSubmitting}
-                    name="phone"
-                    placeholder="Enter phone number"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
+      {/* Add / Edit User Dialog Modal */}
+      <Dialog open={showModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, bgcolor: "#0f172a", color: "#ffffff" }}>
+          {editingEmployee ? "Edit User" : "Add New User"}
+        </DialogTitle>
+        <DialogContent dividers sx={{ pt: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} id="user-form">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Full Name *"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                  required
+                />
+              </Grid>
 
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label>
-                    User Role <span style={{ color: "red" }}>*</span>
-                  </Form.Label>
-                  <Form.Select
-                    disabled={isSubmitting}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email *"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                  required
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone Number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="role-select-label">User Role *</InputLabel>
+                  <Select
+                    labelId="role-select-label"
+                    label="User Role *"
                     name="user_type"
                     value={formData.user_type}
                     onChange={handleInputChange}
-                  >
-                    <option value="employee">Employee</option>
-                    <option value="admin">Admin</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="mb-3">
-              <Col xs={12}>
-                <Form.Group>
-                  <Form.Label>
-                    Password {!editingEmployee && <span style={{ color: "red" }}>*</span>}
-                  </Form.Label>
-                  <Form.Control
                     disabled={isSubmitting}
-                    type="password"
-                    name="password"
-                    placeholder={
-                      editingEmployee
-                        ? "Leave blank to keep current password"
-                        : "Enter password"
-                    }
-                    value={formData.password}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Btn
-            variant="secondary"
-            onClick={handleCloseModal}
-            disabled={isSubmitting}
-          >
+                  >
+                    <MenuItem value="employee">Employee</MenuItem>
+                    <MenuItem value="admin">Admin</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label={editingEmployee ? "Password (leave blank to keep current)" : "Password *"}
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                  required={!editingEmployee}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={handleCloseModal} disabled={isSubmitting} color="inherit">
             Cancel
-          </Btn>
-          <Btn
-            variant="primary"
-            onClick={handleSubmit}
+          </Button>
+          <Button
+            type="submit"
+            form="user-form"
+            variant="contained"
+            color="primary"
             disabled={isSubmitting}
-            style={{
-              minWidth: "100px",
-              backgroundColor: "#00AEEF",
-              border: "none",
-            }}
+            sx={{ minWidth: 100 }}
           >
             {isSubmitting ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" /> Saving...
-              </>
+              <CircularProgress size={20} color="inherit" />
             ) : editingEmployee ? (
               "Update"
             ) : (
               "Save"
             )}
-          </Btn>
-        </Modal.Footer>
-      </Modal>
-    </div>
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={handleCloseNotify}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseNotify} severity={notification.severity} sx={{ width: "100%" }}>
+          {notification.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 

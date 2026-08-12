@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Tag, Spin } from "antd";
-import { TeamOutlined, CrownOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  Box,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  CircularProgress,
+  Avatar,
+} from "@mui/material";
+import {
+  People as PeopleIcon,
+  Stars as AdminIcon,
+  CheckCircle as ActiveIcon,
+} from "@mui/icons-material";
 import axios from "axios";
 
 const SuperAdminDashboard = () => {
@@ -31,133 +45,95 @@ const SuperAdminDashboard = () => {
   }, [token]);
 
   return (
-    <div className="container" style={{ maxWidth: "1100px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h2 style={{ margin: 0, fontWeight: 700, color: "#0f172a" }}>Super Admin Dashboard</h2>
-        <Tag color="purple" style={{ padding: "4px 12px", fontSize: "14px", borderRadius: "20px" }}>
-          Super Admin Control Center
-        </Tag>
-      </div>
+    <Container maxWidth="lg" sx={{ py: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 1 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ color: "#0f172a" }}>
+          Super Admin Dashboard
+        </Typography>
+        <Chip
+          label="Super Admin Control Center"
+          color="secondary"
+          sx={{ fontWeight: 600, px: 1, py: 2, borderRadius: "20px" }}
+        />
+      </Box>
 
-      <Row gutter={[24, 24]}>
-        <Col xs={24} md={8}>
-          <Card
-            bordered={false}
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-              background: "#ffffff",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <div
-                style={{
-                  background: "#f3e8ff",
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <CrownOutlined style={{ fontSize: "28px", color: "#8b5cf6" }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ color: "#64748b", margin: 0, fontSize: "14px", fontWeight: 500 }}>
-                  Total Admins
-                </p>
-                {loading ? (
-                  <Spin size="small" style={{ marginTop: "4px" }} />
-                ) : (
-                  <h2 style={{ margin: "4px 0 0 0", fontSize: "26px", fontWeight: 700, color: "#0f172a" }}>
-                    {stats.total_admins}
-                  </h2>
-                )}
-              </div>
-            </div>
+      <Grid container spacing={3}>
+        {/* Total Admins */}
+        <Grid item xs={12} md={4}>
+          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Avatar sx={{ bgcolor: "#f3e8ff", color: "#8b5cf6", width: 56, height: 56, borderRadius: 3 }}>
+                  <AdminIcon fontSize="large" />
+                </Avatar>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Total Admins
+                  </Typography>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ mt: 1 }} />
+                  ) : (
+                    <Typography variant="h4" fontWeight={700} sx={{ color: "#0f172a", mt: 0.5 }}>
+                      {stats.total_admins}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
           </Card>
-        </Col>
+        </Grid>
 
-        <Col xs={24} md={8}>
-          <Card
-            bordered={false}
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-              background: "#ffffff",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <div
-                style={{
-                  background: "#e0f2fe",
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <TeamOutlined style={{ fontSize: "28px", color: "#00AEEF" }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ color: "#64748b", margin: 0, fontSize: "14px", fontWeight: 500 }}>
-                  Total Employees
-                </p>
-                {loading ? (
-                  <Spin size="small" style={{ marginTop: "4px" }} />
-                ) : (
-                  <h2 style={{ margin: "4px 0 0 0", fontSize: "26px", fontWeight: 700, color: "#0f172a" }}>
-                    {stats.total_employees}
-                  </h2>
-                )}
-              </div>
-            </div>
+        {/* Total Employees */}
+        <Grid item xs={12} md={4}>
+          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Avatar sx={{ bgcolor: "#e0f2fe", color: "#00AEEF", width: 56, height: 56, borderRadius: 3 }}>
+                  <PeopleIcon fontSize="large" />
+                </Avatar>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Total Employees
+                  </Typography>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ mt: 1 }} />
+                  ) : (
+                    <Typography variant="h4" fontWeight={700} sx={{ color: "#0f172a", mt: 0.5 }}>
+                      {stats.total_employees}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
           </Card>
-        </Col>
+        </Grid>
 
-        <Col xs={24} md={8}>
-          <Card
-            bordered={false}
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-              background: "#ffffff",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <div
-                style={{
-                  background: "#dcfce7",
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <UserOutlined style={{ fontSize: "28px", color: "#16a34a" }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ color: "#64748b", margin: 0, fontSize: "14px", fontWeight: 500 }}>
-                  Active Users
-                </p>
-                {loading ? (
-                  <Spin size="small" style={{ marginTop: "4px" }} />
-                ) : (
-                  <h2 style={{ margin: "4px 0 0 0", fontSize: "26px", fontWeight: 700, color: "#0f172a" }}>
-                    {stats.active_users}
-                  </h2>
-                )}
-              </div>
-            </div>
+        {/* Active Users */}
+        <Grid item xs={12} md={4}>
+          <Card elevation={2} sx={{ borderRadius: 3, backgroundColor: "#ffffff" }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Avatar sx={{ bgcolor: "#dcfce7", color: "#16a34a", width: 56, height: 56, borderRadius: 3 }}>
+                  <ActiveIcon fontSize="large" />
+                </Avatar>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Active Users
+                  </Typography>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ mt: 1 }} />
+                  ) : (
+                    <Typography variant="h4" fontWeight={700} sx={{ color: "#0f172a", mt: 0.5 }}>
+                      {stats.active_users}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
-    </div>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
